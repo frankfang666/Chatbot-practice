@@ -20,21 +20,21 @@ export default function Messager({ model }) {
     const handleSubmit = async (value) => {
         if (value !== "") {
             try {
-                const appendedDisplay = [...displaytxts, { "text": value, "source": "human" }];
+                const appendedDisplay = [...displaytxts, { "role": "user", "content": value }];
                 setdisplaytxts(appendedDisplay);
                 setquerytxt("");
                 setToScroll(true);
                 setLoading(true);
 
                 // const res = await fetch(`http://127.0.0.1:3001/query?query=${encodeURIComponent(value)}`, { method: "GET" });
-                const res = await fetch('http://localhost:11434/api/generate', {
+                const res = await fetch('http://localhost:11434/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         model: model,
-                        prompt: value,
+                        messages: appendedDisplay,
                         stream: true
                     }),
                 });
@@ -56,12 +56,12 @@ export default function Messager({ model }) {
 
                     const chunk = decoder.decode(value, { stream: true });
                     try {
-                        text_stream += JSON.parse(chunk).response;
+                        text_stream += JSON.parse(chunk).message.content;
                     } catch (error) {
                         console.log(chunk);
                     }
 
-                    setdisplaytxts([...appendedDisplay, { "text": text_stream, "source": "machine" }]);
+                    setdisplaytxts([...appendedDisplay, { "role": "assistant", "content": text_stream }]);
 
                     // Continue reading the stream
                     setTimeout(processStream, 2000);
@@ -82,7 +82,7 @@ export default function Messager({ model }) {
                     flexDirection: 'column', 
                     justifyContent: 'center', 
                     alignItems: 'center', 
-                    height: '10vh'  
+                    height: '90vh'  
                 }}
         >
             <DisplayArea 
@@ -92,14 +92,11 @@ export default function Messager({ model }) {
                 componentWidth={componentWidth}
                 style={{ 
                     backgroundColor: "#F8F8F8",
-                    width: '50%', 
-                    height: '80%', 
+                    width: '50%', // 调整宽度
+                    height: '80%', // 调整高度
                     border: '1px solid #F8F8F8', 
-                    position: 'absolute', 
-                    marginLeft: '50%', 
-                    marginTop: '85%',
+                    position: 'relative', 
                     overflowY: "scroll",
-                    transform: 'translate(-50%, -50%)' 
                 }}
             />
             <Search
@@ -110,7 +107,7 @@ export default function Messager({ model }) {
                 value={querytxt}
                 onChange={handleAreaChange}
                 onSearch={handleSubmit}
-                style={{ width: componentWidth, height: '10%', marginTop: '90%' }}
+                style={{ width: componentWidth, height: '10%', marginTop: '2%' }}
             />
         </div>
     );

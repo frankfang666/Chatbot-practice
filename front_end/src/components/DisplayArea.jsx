@@ -52,7 +52,7 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                             <li
                                 style={{
                                     display: 'flex',
-                                    justifyContent: x.source === 'human' ? 'flex-end' : 'flex-start',
+                                    justifyContent: x.role === 'user' ? 'flex-end' : 'flex-start',
                                     position: 'relative' // 添加相对定位
                                 }}
                                 onMouseEnter={() => setHoveredIndex(i)} // 鼠标进入时设置悬停索引
@@ -63,24 +63,24 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                         position: 'relative',
                                         padding: '10px',
                                         display: 'inline-block',
-                                        backgroundColor: x.source === 'human' ? '#E8E8E8' : '#229FFF',
+                                        backgroundColor: x.role === 'user' ? '#E8E8E8' : '#229FFF',
                                         borderRadius: '10px',
                                         maxWidth: componentWidth,
-                                        color: x.source === 'human' ? 'black' : 'white',
+                                        color: x.role === 'user' ? 'black' : 'white',
                                         wordBreak: 'break-word',
                                         marginTop: '20px',
                                         marginBottom: '10px',
-                                        marginLeft: x.source === 'human' ? '0px' : '10px',
-                                        marginRight: x.source === 'machine' ? '10px' : '0px',
+                                        marginLeft: x.role === 'user' ? '0px' : '10px',
+                                        marginRight: x.role === 'assistant' ? '10px' : '0px',
                                         overflow: 'hidden',
                                     }}
                                 >
                                     <ReactMarkdown components={{p: ({ children }) => <span style={{ margin: 0, wordBreak: 'break-word', maxWidth: '100%' }}>{children}</span>}}>
-                                        {x.text}
+                                        {x.content}
                                     </ReactMarkdown>
                                 </div>
                                 {
-                                    x.source === 'human' && 
+                                    x.role === 'user' && 
                                     (<img 
                                         src='user.ico' 
                                         alt="avatar" 
@@ -97,7 +97,7 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                 {
                                     (<Tooltip title="复制">
                                         <button 
-                                            onClick={() => copyToClipboard(x.text)} 
+                                            onClick={() => copyToClipboard(x.content)} 
                                             style={{
                                                 backgroundColor: 'transparent',
                                                 border: 'none',
@@ -105,7 +105,7 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                                 color: 'gray',
                                                 position: 'absolute',
                                                 bottom: '5px', // 调整按钮位置到气泡外的左下角
-                                                left: x.source === 'machine' ? '10px' : '88.5%',
+                                                left: x.role === 'assistant' ? '10px' : '88.5%',
                                                 transform: 'translateY(100%)',
                                                 display: hoveredIndex === i ? 'block' : 'none' // 根据悬停索引控制显示
                                             }}
