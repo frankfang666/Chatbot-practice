@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu } from 'antd';
 
-const { SubMenu } = Menu;
+const MyMenu = ({ models, currentModel, setModel }) => {
 
-const MyMenu = ({ models, setModel }) => {
-  const [current, setCurrent] = useState(null);
-  const filterKeywords = ['llama3', 'qwen2']; 
-
-  const handleClick = e => {
-    setCurrent(e.key);
+  const handleMenuClick = (e) => {
     setModel(e.key);
   };
 
+  const items = models
+    .map((model) => ({
+      key: model.name,
+      label: model.name,
+    }));
+
   return (
-    <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
-      <SubMenu key="models" title="选择模型">
-        {models.filter(model => filterKeywords.some(keyword => model.name.includes(keyword)))
-          .map(model => (
-          <Menu.Item key={model.name}>{model.name}</Menu.Item>
-        ))}
-      </SubMenu>
-    </Menu>
+    <div style={{ display: 'flex', justifyContent: 'center'}}>
+      <Menu onClick={handleMenuClick} style={{ width: '50%' }} collapsed={true} mode="vertical" items={[{key: 'select-model', label: `当前模型: ${currentModel}`, children: items}]} />
+    </div>
   );
 };
 

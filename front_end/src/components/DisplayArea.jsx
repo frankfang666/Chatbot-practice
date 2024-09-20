@@ -1,10 +1,12 @@
 import {useEffect, useRef, useState} from 'react'
 import ReactMarkdown from 'react-markdown'
 import { CopyOutlined } from '@ant-design/icons'
+import { Tooltip } from 'antd' // 引入 Tooltip 组件
 
 export default function DisplayArea({ displaytxts, toScroll, setToScroll, componentWidth, style }) {
     const scrollableDivRef = useRef(null)
     const [showPopup, setShowPopup] = useState(false)
+    const [hoveredIndex, setHoveredIndex] = useState(null) // 用于跟踪悬停的气泡索引
 
     useEffect(()=>{
             scrollableDivRef.current.scrollTop = scrollableDivRef.current.scrollHeight
@@ -51,7 +53,10 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                 style={{
                                     display: 'flex',
                                     justifyContent: x.source === 'human' ? 'flex-end' : 'flex-start',
+                                    position: 'relative' // 添加相对定位
                                 }}
+                                onMouseEnter={() => setHoveredIndex(i)} // 鼠标进入时设置悬停索引
+                                onMouseLeave={() => setHoveredIndex(null)} // 鼠标离开时重置悬停索引
                             >
                                 <div
                                     style={{
@@ -73,19 +78,6 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                     <ReactMarkdown components={{p: ({ children }) => <span style={{ margin: 0, wordBreak: 'break-word', maxWidth: '100%' }}>{children}</span>}}>
                                         {x.text}
                                     </ReactMarkdown>
-                                    <div style={{ textAlign: 'left', marginTop: '5px' }}>
-                                        <button 
-                                            onClick={() => copyToClipboard(x.text)} 
-                                            style={{
-                                                backgroundColor: 'transparent',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                color: x.source === 'human' ? 'black' : 'white'
-                                            }}
-                                        >
-                                            <CopyOutlined style={{ fontSize: '16px', color: x.source === 'human' ? 'gray' : 'white' }} />
-                                        </button>
-                                    </div>
                                 </div>
                                 {
                                     x.source === 'human' && 
@@ -98,9 +90,29 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
                                             borderRadius: '50%', 
                                             marginTop: '15px',
                                             marginLeft: '10px', 
-                                            marginRight: '0px' 
+                                            marginRight: '10px' 
                                         }} 
                                     />)
+                                }
+                                {
+                                    (<Tooltip title="复制">
+                                        <button 
+                                            onClick={() => copyToClipboard(x.text)} 
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: 'gray',
+                                                position: 'absolute',
+                                                bottom: '5px', // 调整按钮位置到气泡外的左下角
+                                                left: x.source === 'machine' ? '10px' : '88.5%',
+                                                transform: 'translateY(100%)',
+                                                display: hoveredIndex === i ? 'block' : 'none' // 根据悬停索引控制显示
+                                            }}
+                                        >
+                                            <CopyOutlined style={{ fontSize: '16px' }} />
+                                        </button>
+                                    </Tooltip>)
                                 }
                             </li>
                         </ul>
