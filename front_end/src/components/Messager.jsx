@@ -51,7 +51,7 @@ export default function Messager({ model }) {
                 const processStream = async () => {
                     const { done, value } = await reader.read();
                     if (done) {
-                        return; // Stream completed
+                        return; // Stream completed (end of recursion)
                     }
 
                     const chunk = decoder.decode(value, { stream: true });
@@ -65,7 +65,7 @@ export default function Messager({ model }) {
 
                     // Continue reading the stream
                     setTimeout(processStream, 2000);
-                    processStream();
+                    processStream();  // recursive call
                 };
 
                 processStream();

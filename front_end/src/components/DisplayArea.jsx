@@ -11,8 +11,7 @@ export default function DisplayArea({ displaytxts, toScroll, setToScroll, compon
     useEffect(()=>{
             scrollableDivRef.current.scrollTop = scrollableDivRef.current.scrollHeight
             setToScroll(false)
-        }, [toScroll, setToScroll]
-    )
+        }, [displaytxts, toScroll, setToScroll]); // 添加 displaytxts 作为依赖
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
